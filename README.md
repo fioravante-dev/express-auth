@@ -1,15 +1,13 @@
-# RESTful API
-
-This is the README for the **ExpressAuth** application. Here you will find information on how to set up, run, and use the application.
+# ExpressAuth
 
 ## 📋 Prerequisites
 
 Make sure you have the following items installed on your machine:
 
-- [Node.js](https://nodejs.org/) (version X.X.X or higher)
+- [Node.js](https://nodejs.org/)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 - Compatible database (e.g., MySQL, PostgreSQL, MongoDB, etc.)
-
+- 
 ## 🚀 Installation
 
 1. Clone the repository:
@@ -41,7 +39,6 @@ Make sure you have the following items installed on your machine:
 
    # Authentication
    JWT_SECRET=your-jwt-secret
-   JWT_EXPIRATION=your-duration
    ```
 
 4. Run the database migrations (if applicable):
@@ -121,10 +118,12 @@ Returns a welcome message or basic API information.
 #### Response:
 ```json
 {
-  "message": "Welcome to the ExpressAuth API!"
+    "status": "OK",
+    "message": "ExpressAuth is running",
+    "timestamp": "2025-04-12T12:00:00.000Z",
 }
 ```
-
+## 🛠More endpoints on the way.🛠
 
 ## 🛠 Technologies Used
 
