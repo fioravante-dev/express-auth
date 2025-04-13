@@ -1,12 +1,12 @@
 import express from "express";
 
-import userRoutes from "./routes/user.routes";
-import statusRoutes from "./routes/status.routes";
+import authRoutes from "./modules/auth/auth.routes";
+import statusRoutes from "./modules/status/status.routes";
 
 const app = express();
 app.use(express.json());
-app.use(userRoutes);
-app.use(statusRoutes)
+app.use(authRoutes);
+app.use(statusRoutes);
 
 const PORT = process.env.PORT || 3333;
 
