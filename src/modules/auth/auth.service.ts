@@ -37,7 +37,11 @@ class AuthService {
       user.id
     );
 
-    return { user: userWithoutPassword, accessToken, refreshToken };
+    return {
+      user: userWithoutPassword,
+      accessToken,
+      refreshToken,
+    };
   }
 
   async login(email: string, password: string) {
@@ -60,7 +64,18 @@ class AuthService {
     return { user: userWithoutPassword, accessToken, refreshToken };
   }
 
-  // async refreshToken(token: string) {}
+  async refresh(refreshToken: string) {
+    const userId = await TokenService.validateStoredRefreshToken(refreshToken);
+    await TokenService.deleteRefreshToken(refreshToken);
+    const { accessToken, refreshToken: newRefreshToken } = await TokenService.issueTokens(userId);
+    return { accessToken, refreshToken: newRefreshToken };
+  }
+
+  async logout(refreshToken: string) {
+    await TokenService.validateStoredRefreshToken(refreshToken);
+    await TokenService.deleteRefreshToken(refreshToken);
+    return { message: "Logged out successfully" };
+  }
 }
 
 export default new AuthService();

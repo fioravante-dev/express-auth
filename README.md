@@ -1,164 +1,165 @@
 # ExpressAuth
 
-## 📋 Prerequisites
+API RESTful de autenticação desenvolvida com Node.js, Express, Prisma e Zod.  
+Segue uma arquitetura modular e segura utilizando `access_token` e `refresh_token` com JWT.
 
-Make sure you have the following items installed on your machine:
+Repositório: [fioravante-dev/express-auth](https://github.com/fioravante-dev/express-auth)
 
-- [Node.js](https://nodejs.org/)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- Compatible database (e.g., MySQL, PostgreSQL, MongoDB, etc.)
-- 
-## 🚀 Installation
+---
 
-1. Clone the repository:
+## ⚙️ Tecnologias utilizadas
 
-   ```bash
-   git clone https://github.com/fioravante-dev/express-auth.git
-   cd express-auth
-   ```
+- Node.js + Express
+- TypeScript
+- Prisma ORM
+- Zod (validação de schemas)
+- JSON Web Token (JWT)
 
-2. Install the dependencies:
+---
 
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-3. Configure the environment variables:
-   Create a `.env` file in the root of the project and add the necessary configurations, such as the database URL, port, etc.
-
-   Example `.env` file:
-
-   ```
-   # Server configuration
-   PORT=your-port
-
-   # Database configuration
-   DATABASE_URL=your-database-url
-
-   # Authentication
-   JWT_SECRET=your-jwt-secret
-   ```
-
-4. Run the database migrations (if applicable):
-   ```bash
-   npm run migrate
-   # or
-   yarn migrate
-   ```
-
-## 🏃‍♂️ Running the Application
-
-To start the server in development mode, use:
+## 🚀 Como rodar o projeto localmente
 
 ```bash
+# Instale as dependências
+npm install
+
+# Configure o banco de dados
+npx prisma migrate dev --name init
+
+# Rode o servidor
 npm run dev
-# or
-yarn dev
-```
-
-The application will be available at `http://localhost:3333` (or the configured port).
-
-## 📚 Endpoints
-
-### **POST** `/register`
-Registers a new user.
-
-#### Request Body:
-```json
-{
-  "name": "John Doe",
-  "email": "johndoe@example.com",
-  "password": "securepassword"
-}
-```
-
-#### Response:
-```json
-{
-  "id": 1,
-  "name": "John Doe",
-  "email": "johndoe@example.com",
-  "createdAt": "2025-04-12T12:00:00.000Z"
-}
 ```
 
 ---
 
-### **POST** `/login`
-Authenticates a user and returns a token.
+## 🔐 Endpoints de Autenticação
 
-#### Request Body:
+### `POST /register`
+
+Cria um novo usuário.
+
+**Body:**
 ```json
 {
-  "email": "johndoe@example.com",
-  "password": "securepassword"
+  "email": "usuario@email.com",
+  "password": "123456",
+  "name": "Usuário Teste"
 }
 ```
 
-#### Response:
+**Resposta:**
 ```json
 {
   "user": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "johndoe@example.com"
+    "id": "...",
+    "email": "...",
+    "name": "...",
+    "is_verified": false
   },
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "expiresIn": "1d"
+  "access_token": "...",
+  "refresh_token": "..."
 }
 ```
 
 ---
 
-### **GET** `/`
-Returns a welcome message or basic API information.
+### `POST /login`
 
-#### Response:
+Autentica um usuário.
+
+**Body:**
 ```json
 {
-    "status": "OK",
-    "message": "ExpressAuth is running",
-    "timestamp": "2025-04-12T12:00:00.000Z",
+  "email": "usuario@email.com",
+  "password": "123456"
 }
 ```
-## 🛠More endpoints on the way.🛠
 
-## 🛠 Technologies Used
-
-- Node.js
-- Express
-- Database (e.g., MySQL, PostgreSQL, MongoDB)
-- Other relevant libraries and tools:
-  - `bcrypt` for password hashing
-  - `jsonwebtoken` for authentication
-  - `zod` for schema validation
-  - `prisma` for database management
-
-## 🤝 Contribution
-
-Contributions are welcome! Follow the steps below:
-
-1. Fork the project.
-2. Create a branch for your feature/bugfix:
-   ```bash
-   git checkout -b my-feature
-   ```
-3. Commit your changes:
-   ```bash
-   git commit -m "Description of my feature"
-   ```
-4. Push to the remote repository:
-   ```bash
-   git push origin my-feature
-   ```
-5. Open a Pull Request.
-
-## 📄 License
-
-This project is licensed under the [MIT](LICENSE) license.
+**Resposta:**
+```json
+{
+  "user": {
+    "id": "...",
+    "email": "...",
+    "name": "...",
+    "is_verified": false
+  },
+  "access_token": "...",
+  "refresh_token": "..."
+}
+```
 
 ---
 
-Made with ❤️ by [fioravante-dev](https://github.com/fioravante-dev).
+### `POST /refresh`
+
+Gera um novo par de tokens a partir de um `refresh_token` válido.
+
+**Body:**
+```json
+{
+  "refresh_token": "..."
+}
+```
+
+**Resposta:**
+```json
+{
+  "access_token": "...",
+  "refresh_token": "..."
+}
+```
+
+---
+
+### `POST /logout`
+
+Revoga o `refresh_token`.
+
+**Body:**
+```json
+{
+  "refresh_token": "..."
+}
+```
+
+**Resposta:**
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+---
+
+<!-- ## 📁 Estrutura de Pastas
+
+```
+src/
+├── modules/
+│   ├── auth/
+│   │   ├── auth.controller.ts
+│   │   ├── auth.routes.ts
+│   │   ├── auth.schemas.ts
+│   │   └── auth.service.ts
+│   └── token/
+│       └── token.service.ts
+├── middlewares/
+├── utils/
+├── lib/
+│   └── prisma.ts
+```
+
+--- -->
+
+## ✅ Futuras melhorias
+
+- Rota `/me` para retorno de dados do usuário autenticado
+- Middleware de autorização por roles (admin, user, etc.)
+- Documentação Swagger/OpenAPI
+- Testes automatizados com Jest ou Vitest
+
+---
+
+Feito com dedicação por Pedro Fioravante 
+Projeto: **ExpressAuth**
