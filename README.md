@@ -29,7 +29,16 @@ npx prisma migrate dev --name init
 # Rode o servidor
 npm run dev
 ```
+## 📦 Variáveis de ambiente (.env)
 
+Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
+
+```env
+DATABASE_URL=your-db-url
+PORT=a-port # default 3333
+JWT_ACCESS_SECRET=your-access-token-secret
+JWT_REFRESH_SECRET=your-refresh-token-secret
+```
 ---
 
 ## 🔐 Endpoints de Autenticação
