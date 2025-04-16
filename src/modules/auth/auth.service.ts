@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { injectable, inject } from "tsyringe";
 
 import prisma from "../../core/libs/prisma";
 import TokenService from "../token/token.service";
@@ -9,7 +10,12 @@ interface CreateUserInput {
   password: string;
 }
 
-class AuthService {
+@injectable()
+export default class AuthService {
+  constructor(
+    @inject(TokenService) private tokenService: TokenService
+  ){}
+
   async createUser({ name, email, password }: CreateUserInput) {
     //check if user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -33,7 +39,7 @@ class AuthService {
     const { password: _, createdAt, updatedAt, ...userWithoutPassword } = user;
 
     //generate access and refresh tokens and also store refresh token in db
-    const { accessToken, refreshToken } = await TokenService.issueTokens(
+    const { accessToken, refreshToken } = await this.tokenService.issueTokens(
       user.id
     );
 
@@ -55,7 +61,7 @@ class AuthService {
     if (!isPasswordValid) throw new Error("Invalid email or password");
 
     //generate access and refresh tokens and also store refresh token in db
-    const { accessToken, refreshToken } = await TokenService.issueTokens(
+    const { accessToken, refreshToken } = await this.tokenService.issueTokens(
       user.id
     );
 
@@ -65,17 +71,15 @@ class AuthService {
   }
 
   async refresh(refreshToken: string) {
-    const userId = await TokenService.validateStoredRefreshToken(refreshToken);
-    await TokenService.deleteRefreshToken(refreshToken);
-    const { accessToken, refreshToken: newRefreshToken } = await TokenService.issueTokens(userId);
+    const userId = await this.tokenService.validateStoredRefreshToken(refreshToken);
+    await this.tokenService.deleteRefreshToken(refreshToken);
+    const { accessToken, refreshToken: newRefreshToken } = await this.tokenService.issueTokens(userId);
     return { accessToken, refreshToken: newRefreshToken };
   }
 
   async logout(refreshToken: string) {
-    await TokenService.validateStoredRefreshToken(refreshToken);
-    await TokenService.deleteRefreshToken(refreshToken);
+    await this.tokenService.validateStoredRefreshToken(refreshToken);
+    await this.tokenService.deleteRefreshToken(refreshToken);
     return { message: "Logged out successfully" };
   }
 }
-
-export default new AuthService();

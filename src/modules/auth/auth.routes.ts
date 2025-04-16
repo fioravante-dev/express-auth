@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { container } from "tsyringe";
 
 import AuthController from "./auth.controller";
 import { validateSchema } from "../../core/middlewares/validateSchema";
@@ -6,29 +7,31 @@ import {
   registerSchema,
   loginSchema,
   refreshTokenSchema,
-} from "./types/authSchema";
+} from "./types/authSchemas";
 
+
+const authController = container.resolve(AuthController);
 const authRoutes = Router();
 
 authRoutes.post(
   "/auth/register",
   validateSchema(registerSchema),
-  AuthController.register
+  authController.register
 );
 authRoutes.post(
   "/auth/login",
   validateSchema(loginSchema),
-  AuthController.login
+  authController.register
 );
 authRoutes.post(
   "/auth/refresh",
   validateSchema(refreshTokenSchema),
-  AuthController.refresh
+  authController.refresh
 );
 authRoutes.post(
   "/auth/logout",
   validateSchema(refreshTokenSchema),
-  AuthController.logout
+  authController.logout
 );
 
 export default authRoutes;

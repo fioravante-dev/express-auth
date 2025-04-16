@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { injectable } from "tsyringe";
 
 import prisma from "../../core/libs/prisma";
 
@@ -7,7 +8,8 @@ const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "dev-refresh-secret";
 const ACCESS_EXPIRATION = "15m";
 const REFRESH_EXPIRATION_DAYS = 7;
 
-class TokenService {
+@injectable()
+export default class TokenService {
   generateAccessToken(userId: string): string {
     return jwt.sign({ userId }, ACCESS_SECRET, {
       expiresIn: ACCESS_EXPIRATION,
@@ -49,7 +51,7 @@ class TokenService {
 
   async validateStoredRefreshToken(refreshToken: string): Promise<string> {
     try {
-      jwt.verify(refreshToken, REFRESH_SECRET)
+      jwt.verify(refreshToken, REFRESH_SECRET);
       const tokenInDb = await prisma.refreshToken.findUnique({
         where: { token: refreshToken },
       });
@@ -58,7 +60,7 @@ class TokenService {
         throw new Error("Refresh token not authortized");
       }
       return tokenInDb.userId;
-    } catch(err: any) {
+    } catch (err: any) {
       throw new Error(err.message);
     }
   }
@@ -92,5 +94,3 @@ class TokenService {
     return { accessToken, refreshToken };
   }
 }
-
-export default new TokenService();
