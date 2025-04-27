@@ -1,37 +1,47 @@
 # ExpressAuth
 
-API RESTful de autenticação desenvolvida com Node.js, Express, Prisma e Zod.  
-Segue uma arquitetura modular e segura utilizando `access_token` e `refresh_token` com JWT.
+RESTful API for authentication developed with Node.js, Express, Prisma, and Zod.  
+Follows a modular and secure architecture using `access_token` and `refresh_token` with JWT.
 
-Repositório: [fioravante-dev/express-auth](https://github.com/fioravante-dev/express-auth)
+Repository: [fioravante-dev/express-auth](https://github.com/fioravante-dev/express-auth)
 
 ---
 
-## ⚙️ Tecnologias utilizadas
+## ⚙️ Technologies Used
 
 - Node.js + Express
 - TypeScript
 - Prisma ORM
-- Zod (validação de schemas)
+- Zod (schema validation)
 - JSON Web Token (JWT)
+- tsyringe (Dependency Injection)
+- Vitest
+- Docker
 
 ---
 
-## 🚀 Como rodar o projeto localmente
+## 🚀 How to Run the Project Locally
 
 ```bash
-# Instale as dependências
+# Install dependencies
 npm install
 
-# Configure o banco de dados
+# Configure the database
 npx prisma migrate dev --name init
 
-# Rode o servidor
+# Run the server
 npm run dev
 ```
-## 📦 Variáveis de ambiente (.env)
 
-Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
+OR run the entire API using Docker:
+
+```bash
+docker-compose up
+```
+
+## 📦 Environment Variables (.env)
+
+Create a `.env` file at the root of the project with the following content:
 
 ```env
 DATABASE_URL=your-db-url
@@ -39,24 +49,25 @@ PORT=a-port # default 3333
 JWT_ACCESS_SECRET=your-access-token-secret
 JWT_REFRESH_SECRET=your-refresh-token-secret
 ```
+
 ---
 
-## 🔐 Endpoints de Autenticação
+## 🔐 Authentication Endpoints
 
 ### `POST /register`
 
-Cria um novo usuário.
+Creates a new user.
 
 **Body:**
 ```json
 {
-  "email": "usuario@email.com",
+  "email": "user@email.com",
   "password": "123456",
-  "name": "Usuário Teste"
+  "name": "Test User"
 }
 ```
 
-**Resposta:**
+**Response:**
 ```json
 {
   "user": {
@@ -74,17 +85,17 @@ Cria um novo usuário.
 
 ### `POST /login`
 
-Autentica um usuário.
+Authenticates a user.
 
 **Body:**
 ```json
 {
-  "email": "usuario@email.com",
+  "email": "user@email.com",
   "password": "123456"
 }
 ```
 
-**Resposta:**
+**Response:**
 ```json
 {
   "user": {
@@ -102,7 +113,7 @@ Autentica um usuário.
 
 ### `POST /refresh`
 
-Gera um novo par de tokens a partir de um `refresh_token` válido.
+Generates a new pair of tokens from a valid `refresh_token`.
 
 **Body:**
 ```json
@@ -111,7 +122,7 @@ Gera um novo par de tokens a partir de um `refresh_token` válido.
 }
 ```
 
-**Resposta:**
+**Response:**
 ```json
 {
   "access_token": "...",
@@ -123,7 +134,7 @@ Gera um novo par de tokens a partir de um `refresh_token` válido.
 
 ### `POST /logout`
 
-Revoga o `refresh_token`.
+Revokes the `refresh_token`.
 
 **Body:**
 ```json
@@ -132,7 +143,7 @@ Revoga o `refresh_token`.
 }
 ```
 
-**Resposta:**
+**Response:**
 ```json
 {
   "message": "Logged out successfully"
@@ -141,34 +152,14 @@ Revoga o `refresh_token`.
 
 ---
 
-<!-- ## 📁 Estrutura de Pastas
+## ✅ Future Improvements
 
-```
-src/
-├── modules/
-│   ├── auth/
-│   │   ├── auth.controller.ts
-│   │   ├── auth.routes.ts
-│   │   ├── auth.schemas.ts
-│   │   └── auth.service.ts
-│   └── token/
-│       └── token.service.ts
-├── middlewares/
-├── utils/
-├── lib/
-│   └── prisma.ts
-```
-
---- -->
-
-## ✅ Futuras melhorias
-
-- Rota `/me` para retorno de dados do usuário autenticado
-- Middleware de autorização por roles (admin, user, etc.)
-- Documentação Swagger/OpenAPI
-- Testes automatizados com Jest ou Vitest
-
+- Role-based authorization middleware (admin, user, etc.)
+- Swagger/OpenAPI documentation
+- More Automated tests with Jest or Vitest
+- OAuth
+- More routes
 ---
 
-Feito com dedicação por Pedro Fioravante 
-Projeto: **ExpressAuth**
+Made with dedication by Pedro Fioravante  
+Project: **ExpressAuth**

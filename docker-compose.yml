@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16
@@ -8,11 +6,27 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: api_users_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-api_users_db}
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: expressauth_api
+    ports:
+      - "${PORT:-3333}:${PORT:-3333}"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      PORT: ${PORT:-3333}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+      - /app/node_modules
 
 volumes:
   pgdata:

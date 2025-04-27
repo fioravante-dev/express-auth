@@ -12,9 +12,7 @@ interface CreateUserInput {
 
 @injectable()
 export default class AuthService {
-  constructor(
-    @inject(TokenService) private tokenService: TokenService
-  ){}
+  constructor(@inject(TokenService) private tokenService: TokenService) {}
 
   async createUser({ name, email, password }: CreateUserInput) {
     //check if user already exists
@@ -39,9 +37,8 @@ export default class AuthService {
     const { password: _, createdAt, updatedAt, ...userWithoutPassword } = user;
 
     //generate access and refresh tokens and also store refresh token in db
-    const { accessToken, refreshToken } = await this.tokenService.issueTokens(
-      user.id
-    );
+    const { accessToken, refreshToken } =
+      await this.tokenService.issueUserTokens(user.id);
 
     return {
       user: userWithoutPassword,
@@ -61,9 +58,8 @@ export default class AuthService {
     if (!isPasswordValid) throw new Error("Invalid email or password");
 
     //generate access and refresh tokens and also store refresh token in db
-    const { accessToken, refreshToken } = await this.tokenService.issueTokens(
-      user.id
-    );
+    const { accessToken, refreshToken } =
+      await this.tokenService.issueUserTokens(user.id);
 
     const { password: _, createdAt, updatedAt, ...userWithoutPassword } = user;
 
@@ -71,9 +67,12 @@ export default class AuthService {
   }
 
   async refresh(refreshToken: string) {
-    const userId = await this.tokenService.validateStoredRefreshToken(refreshToken);
+    const userId = await this.tokenService.validateStoredRefreshToken(
+      refreshToken
+    );
     await this.tokenService.deleteRefreshToken(refreshToken);
-    const { accessToken, refreshToken: newRefreshToken } = await this.tokenService.issueTokens(userId);
+    const { accessToken, refreshToken: newRefreshToken } =
+      await this.tokenService.issueUserTokens(userId);
     return { accessToken, refreshToken: newRefreshToken };
   }
 

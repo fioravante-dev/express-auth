@@ -2,24 +2,18 @@ import jwt from "jsonwebtoken";
 import { injectable } from "tsyringe";
 
 import prisma from "../../core/libs/prisma";
+import { env } from "../../core/libs/utils/env";
 
-const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || "dev-access-secret";
-const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "dev-refresh-secret";
 const ACCESS_EXPIRATION = "15m";
 const REFRESH_EXPIRATION_DAYS = 7;
 
 @injectable()
 export default class TokenService {
-  generateAccessToken(userId: string): string {
-    return jwt.sign({ userId }, ACCESS_SECRET, {
-      expiresIn: ACCESS_EXPIRATION,
-    });
-  }
-
-  generateRefreshToken(userId: string): string {
-    return jwt.sign({ userId }, REFRESH_SECRET, {
-      expiresIn: `${REFRESH_EXPIRATION_DAYS}d`,
-    });
+  async issueUserTokens(userId: string) {
+    const accessToken = this.generateAccessToken(userId);
+    const refreshToken = this.generateRefreshToken(userId);
+    await this.storeRefreshToken(refreshToken, userId);
+    return { accessToken, refreshToken };
   }
 
   async deleteRefreshToken(refreshToken: string) {
@@ -43,7 +37,7 @@ export default class TokenService {
 
   validateAccessToken(token: string) {
     try {
-      return jwt.verify(token, ACCESS_SECRET);
+      return jwt.verify(token, env.ACCESS_SECRET);
     } catch (err: any) {
       throw new Error(err.message);
     }
@@ -51,29 +45,32 @@ export default class TokenService {
 
   async validateStoredRefreshToken(refreshToken: string): Promise<string> {
     try {
-      jwt.verify(refreshToken, REFRESH_SECRET);
+      jwt.verify(refreshToken, env.REFRESH_SECRET);
       const tokenInDb = await prisma.refreshToken.findUnique({
         where: { token: refreshToken },
       });
 
       if (!tokenInDb) {
-        throw new Error("Refresh token not authortized");
+        throw new Error("Invalid refresh token");
       }
       return tokenInDb.userId;
     } catch (err: any) {
       throw new Error(err.message);
     }
   }
-
-  async validateRefreshTokenInDB(refreshToken: string) {
-    return await prisma.refreshToken.findUnique({
-      where: {
-        token: refreshToken,
-      },
+  private generateAccessToken(userId: string): string {
+    return jwt.sign({ userId }, env.ACCESS_SECRET, {
+      expiresIn: ACCESS_EXPIRATION,
     });
   }
 
-  async storeRefreshToken(token: string, userId: string) {
+  private generateRefreshToken(userId: string): string {
+    return jwt.sign({ userId }, env.REFRESH_SECRET, {
+      expiresIn: `${REFRESH_EXPIRATION_DAYS}d`,
+    });
+  }
+
+  private async storeRefreshToken(token: string, userId: string) {
     const expiresAt = new Date(
       Date.now() + REFRESH_EXPIRATION_DAYS * 24 * 60 * 60 * 1000
     );
@@ -85,12 +82,5 @@ export default class TokenService {
         expiresAt,
       },
     });
-  }
-
-  async issueTokens(userId: string) {
-    const accessToken = this.generateAccessToken(userId);
-    const refreshToken = this.generateRefreshToken(userId);
-    await this.storeRefreshToken(refreshToken, userId);
-    return { accessToken, refreshToken };
   }
 }
