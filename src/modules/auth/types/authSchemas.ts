@@ -10,7 +10,9 @@ export const registerSchema = z.object({
 
 export const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z
+    .string()
+    .min(6, "the password must be at least 6 characters long"),
 });
 
 export const refreshTokenSchema = z.object({

@@ -9,7 +9,6 @@ import {
   refreshTokenSchema,
 } from "./types/authSchemas";
 
-
 const authController = container.resolve(AuthController);
 const authRoutes = Router();
 
@@ -21,7 +20,7 @@ authRoutes.post(
 authRoutes.post(
   "/auth/login",
   validateSchema(loginSchema),
-  authController.register
+  authController.login
 );
 authRoutes.post(
   "/auth/refresh",
