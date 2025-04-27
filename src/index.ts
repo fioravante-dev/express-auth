@@ -7,7 +7,11 @@ import { snakeCaseResponseMiddleware } from "./core/middlewares/snakeCaseRespons
 
 const app = express();
 app.use(express.json());
-app.use(snakeCaseResponseMiddleware);
+
+// Global middlewares
+app.use(snakeCaseResponseMiddleware); // Converts camelCase to snake_case for all responses
+
+// Routes
 app.use(authRoutes);
 app.use(statusRoutes);
 
